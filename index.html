@@ -3,21 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的音樂頻道</title>
+    <title>我的私人音樂電台</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .player { background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        .playlist { text-align: left; list-style: none; padding: 0; margin-top: 20px; max-height: 250px; overflow-y: auto; }
-        .playlist li { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .active { color: #007bff; font-weight: bold; }
+        :root { --primary-color: #007bff; --bg-color: #f8f9fa; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .player { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        .song-info { margin-bottom: 20px; }
+        #songTitle { font-size: 1.2rem; color: #333; margin-bottom: 5px; height: 1.5em; overflow: hidden; }
+        
+        /* 按鈕樣式 */
+        .controls { display: flex; justify-content: center; gap: 20px; align-items: center; margin: 20px 0; }
+        .btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); padding: 10px 15px; border-radius: 50px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .btn:hover { background: var(--primary-color); color: #fff; }
+        .btn-main { padding: 15px 25px; font-size: 1.1rem; }
+
+        .playlist { text-align: left; list-style: none; padding: 0; margin-top: 20px; max-height: 200px; overflow-y: auto; border-top: 1px solid #eee; }
+        .playlist li { padding: 12px; border-bottom: 1px solid #f9f9f9; cursor: pointer; font-size: 14px; }
+        .active { background: #e7f3ff; color: var(--primary-color); font-weight: bold; border-left: 4px solid var(--primary-color); }
+        audio { width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
+
 <div class="player">
-    <h3 id="songTitle">請選擇歌曲</h3>
-    <audio id="audioPlayer" controls></audio>
+    <div class="song-info">
+        <h3 id="songTitle">準備就緒</h3>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <div class="controls">
+        <button class="btn" onclick="prevSong()">上一首</button>
+        <button class="btn btn-main" id="playPauseBtn" onclick="togglePlay()">播放</button>
+        <button class="btn" onclick="nextSong()">下一首</button>
+    </div>
+
     <ul class="playlist" id="playlist"></ul>
 </div>
+
 <script>
     const songs = [
         { title: "K.D - 被神明寫的歌", url: "K.D - 被神明寫的歌.mp3" },
@@ -30,21 +53,58 @@
         { title: "無", url: "無.mp3" }
     ];
 
-    const audioPlayer = document.getElementById('audioPlayer');
+    let currentTrack = 0;
+    const audio = document.getElementById('audioPlayer');
+    const title = document.getElementById('songTitle');
+    const playBtn = document.getElementById('playPauseBtn');
     const playlist = document.getElementById('playlist');
-    const songTitle = document.getElementById('songTitle');
 
+    // 生成歌單
     songs.forEach((song, index) => {
         const li = document.createElement('li');
-        li.innerText = song.title;
-        li.onclick = () => {
-            audioPlayer.src = encodeURI(song.url);
-            audioPlayer.play();
-            songTitle.innerText = song.title;
-            document.querySelectorAll('li').forEach((el, i) => el.className = i === index ? 'active' : '');
-        };
+        li.innerText = (index + 1) + ". " + song.title;
+        li.onclick = () => loadSong(index);
         playlist.appendChild(li);
     });
+
+    function loadSong(index) {
+        currentTrack = index;
+        audio.src = encodeURI(songs[index].url);
+        title.innerText = songs[index].title;
+        
+        // 更新樣式
+        document.querySelectorAll('li').forEach((el, i) => {
+            el.className = i === index ? 'active' : '';
+        });
+        
+        playBtn.innerText = "暫停";
+        audio.play();
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            if (!audio.src) { loadSong(0); } else { audio.play(); playBtn.innerText = "暫停"; }
+        } else {
+            audio.pause();
+            playBtn.innerText = "播放";
+        }
+    }
+
+    function nextSong() {
+        currentTrack = (currentTrack + 1) % songs.length;
+        loadSong(currentTrack);
+    }
+
+    function prevSong() {
+        currentTrack = (currentTrack - 1 + songs.length) % songs.length;
+        loadSong(currentTrack);
+    }
+
+    // 當歌曲播放結束，自動跳下一首
+    audio.onended = () => {
+        nextSong();
+    };
 </script>
+
 </body>
 </html>
