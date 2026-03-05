@@ -11,18 +11,28 @@
         
         #songTitle { font-size: 1.2rem; color: #333; margin-bottom: 15px; height: 1.5em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         
+        /* 進度條區域 */
         .progress-container { margin: 20px 0; display: flex; align-items: center; gap: 10px; }
         #progress { flex: 1; cursor: pointer; accent-color: var(--primary-color); }
         .time { font-size: 12px; color: #666; min-width: 35px; }
 
-        .controls { display: flex; justify-content: center; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
-        .btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); padding: 8px 12px; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: var(--primary-color); color: #fff; }
-        .btn-main { padding: 12px 20px; font-size: 1.1rem; }
+        /* 按鈕容器：改為垂直堆疊 */
+        .controls-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 20px; }
         
-        /* 隨機按鈕開啟時的樣式 */
+        /* 第一排：主控制按鈕 */
+        .main-controls { display: flex; justify-content: center; gap: 20px; align-items: center; }
+        
+        /* 第二排：隨機按鈕 */
+        .sub-controls { display: flex; justify-content: center; width: 100%; }
+
+        .btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn:hover { background: var(--primary-color); color: #fff; }
+        .btn-main { padding: 12px 30px; font-size: 1.2rem; }
+        
+        .btn-shuffle { width: 120px; font-size: 0.9rem; border-color: #666; color: #666; }
         .btn-shuffle.active { background: var(--active-color); border-color: var(--active-color); color: #fff; }
 
+        /* 歌單區域 */
         .playlist { text-align: left; list-style: none; padding: 0; margin-top: 20px; max-height: 180px; overflow-y: auto; border-top: 1px solid #eee; }
         .playlist li { padding: 12px; border-bottom: 1px solid #f9f9f9; cursor: pointer; font-size: 14px; color: #555; }
         .active-song { background: #e7f3ff; color: var(--primary-color); font-weight: bold; border-left: 4px solid var(--primary-color); }
@@ -41,11 +51,15 @@
         <span class="time" id="duration">0:00</span>
     </div>
 
-    <div class="controls">
-        <button class="btn btn-shuffle" id="shuffleBtn" onclick="toggleShuffle()">隨機：關</button>
-        <button class="btn" onclick="prevSong()">⏮</button>
-        <button class="btn btn-main" id="playPauseBtn" onclick="togglePlay()">播放</button>
-        <button class="btn" onclick="nextSong()">⏭</button>
+    <div class="controls-wrapper">
+        <div class="main-controls">
+            <button class="btn" onclick="prevSong()">⏮</button>
+            <button class="btn btn-main" id="playPauseBtn" onclick="togglePlay()">播放</button>
+            <button class="btn" onclick="nextSong()">⏭</button>
+        </div>
+        <div class="sub-controls">
+            <button class="btn btn-shuffle" id="shuffleBtn" onclick="toggleShuffle()">隨機：關</button>
+        </div>
     </div>
 
     <ul class="playlist" id="playlist"></ul>
@@ -64,7 +78,7 @@
     ];
 
     let currentTrack = 0;
-    let isShuffle = false; // 隨機開關狀態
+    let isShuffle = false;
     const audio = document.getElementById('audioPlayer');
     const progress = document.getElementById('progress');
     const title = document.getElementById('songTitle');
@@ -74,7 +88,6 @@
     const durTimeText = document.getElementById('duration');
     const playlist = document.getElementById('playlist');
 
-    // 生成歌單
     songs.forEach((song, index) => {
         const li = document.createElement('li');
         li.innerText = (index + 1) + ". " + song.title;
@@ -99,7 +112,6 @@
         else { audio.pause(); playBtn.innerText = "播放"; }
     }
 
-    // 切換隨機模式
     function toggleShuffle() {
         isShuffle = !isShuffle;
         shuffleBtn.classList.toggle('active');
@@ -108,11 +120,8 @@
 
     function nextSong() {
         if (isShuffle) {
-            // 隨機邏輯：隨機抽一個數字，但不跟現在這首重複
             let newIndex;
-            do {
-                newIndex = Math.floor(Math.random() * songs.length);
-            } while (newIndex === currentTrack && songs.length > 1);
+            do { newIndex = Math.floor(Math.random() * songs.length); } while (newIndex === currentTrack && songs.length > 1);
             currentTrack = newIndex;
         } else {
             currentTrack = (currentTrack + 1) % songs.length;
@@ -127,16 +136,14 @@
 
     audio.ontimeupdate = () => {
         if (audio.duration) {
-            const per = (audio.currentTime / audio.duration) * 100;
-            progress.value = per;
+            progress.value = (audio.currentTime / audio.duration) * 100;
             currTimeText.innerText = formatTime(audio.currentTime);
             durTimeText.innerText = formatTime(audio.duration);
         }
     };
 
     progress.oninput = () => {
-        const seekTime = (progress.value / 100) * audio.duration;
-        audio.currentTime = seekTime;
+        audio.currentTime = (progress.value / 100) * audio.duration;
     };
 
     function formatTime(seconds) {
@@ -145,7 +152,6 @@
         return min + ":" + (sec < 10 ? "0" + sec : sec);
     }
 
-    // 播放結束後自動下一首（會套用隨機或順序邏輯）
     audio.onended = () => nextSong();
 </script>
 
