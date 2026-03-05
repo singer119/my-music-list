@@ -1,5 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的音樂頻道</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .player { background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        .playlist { text-align: left; list-style: none; padding: 0; margin-top: 20px; max-height: 250px; overflow-y: auto; }
+        .playlist li { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .active { color: #007bff; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="player">
+    <h3 id="songTitle">請選擇歌曲</h3>
+    <audio id="audioPlayer" controls></audio>
+    <ul class="playlist" id="playlist"></ul>
+</div>
 <script>
-    // 在這裡填寫你的歌曲資訊
     const songs = [
         { title: "K.D - 被神明寫的歌", url: "K.D - 被神明寫的歌.mp3" },
         { title: "丁春洋 - 不謂俠", url: "丁春洋 - 不謂俠.mp3" },
@@ -7,7 +26,7 @@
         { title: "古風DJ - 難怯", url: "古風DJ - 難怯.mp3" },
         { title: "田園 - 先說愛的人為什麼先離開", url: "田園 - 先說愛的人為什麼先離開.mp3" },
         { title: "利比 - 跳樓機", url: "利比 - 跳樓機.mp3" },
-        { title: "浩然 - 年少的你啊", url: "浩然 - 年少的你啊.mp3" }, // 補上 .mp3
+        { title: "浩然 - 年少的你啊", url: "浩然 - 年少的你啊.mp3" },
         { title: "無", url: "無.mp3" }
     ];
 
@@ -15,22 +34,17 @@
     const playlist = document.getElementById('playlist');
     const songTitle = document.getElementById('songTitle');
 
-    // 生成播放清單
     songs.forEach((song, index) => {
         const li = document.createElement('li');
         li.innerText = song.title;
-        li.onclick = () => playSong(index);
+        li.onclick = () => {
+            audioPlayer.src = encodeURI(song.url);
+            audioPlayer.play();
+            songTitle.innerText = song.title;
+            document.querySelectorAll('li').forEach((el, i) => el.className = i === index ? 'active' : '');
+        };
         playlist.appendChild(li);
     });
-
-    function playSong(index) {
-        // 這邊會自動處理 URL 編碼，避免中文出錯
-        audioPlayer.src = encodeURI(songs[index].url);
-        audioPlayer.play();
-        songTitle.innerText = songs[index].title;
-        
-        document.querySelectorAll('li').forEach((el, i) => {
-            el.className = i === index ? 'active' : '';
-        });
-    }
 </script>
+</body>
+</html>
