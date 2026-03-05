@@ -9,33 +9,30 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .player { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 350px; text-align: center; }
         
-        #songTitle { font-size: 1.2rem; color: #333; margin-bottom: 15px; height: 1.5em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        #songTitle { font-size: 1.1rem; color: #333; margin-bottom: 15px; height: 1.5em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: bold; }
         
-        /* 進度條區域 */
         .progress-container { margin: 20px 0; display: flex; align-items: center; gap: 10px; }
         #progress { flex: 1; cursor: pointer; accent-color: var(--primary-color); }
         .time { font-size: 12px; color: #666; min-width: 35px; }
 
-        /* 按鈕容器：改為垂直堆疊 */
         .controls-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 20px; }
-        
-        /* 第一排：主控制按鈕 */
         .main-controls { display: flex; justify-content: center; gap: 20px; align-items: center; }
-        
-        /* 第二排：隨機按鈕 */
         .sub-controls { display: flex; justify-content: center; width: 100%; }
 
         .btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn:hover { background: var(--primary-color); color: #fff; }
         .btn-main { padding: 12px 30px; font-size: 1.2rem; }
         
-        .btn-shuffle { width: 120px; font-size: 0.9rem; border-color: #666; color: #666; }
+        .btn-shuffle { width: 120px; font-size: 0.85rem; border-color: #666; color: #666; }
         .btn-shuffle.active { background: var(--active-color); border-color: var(--active-color); color: #fff; }
 
-        /* 歌單區域 */
-        .playlist { text-align: left; list-style: none; padding: 0; margin-top: 20px; max-height: 180px; overflow-y: auto; border-top: 1px solid #eee; }
-        .playlist li { padding: 12px; border-bottom: 1px solid #f9f9f9; cursor: pointer; font-size: 14px; color: #555; }
+        .playlist { text-align: left; list-style: none; padding: 0; margin-top: 20px; max-height: 250px; overflow-y: auto; border-top: 1px solid #eee; }
+        .playlist li { padding: 12px; border-bottom: 1px solid #f9f9f9; cursor: pointer; font-size: 13px; color: #555; }
         .active-song { background: #e7f3ff; color: var(--primary-color); font-weight: bold; border-left: 4px solid var(--primary-color); }
+        
+        /* 捲軸美化 */
+        .playlist::-webkit-scrollbar { width: 5px; }
+        .playlist::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -67,6 +64,7 @@
 
 <script>
     const songs = [
+        // 原有歌曲
         { title: "K.D - 被神明寫的歌", url: "K.D - 被神明寫的歌.mp3" },
         { title: "丁春洋 - 不謂俠", url: "丁春洋 - 不謂俠.mp3" },
         { title: "小璐 - 平凡日子里的挣扎", url: "小璐 - 平凡日子里的挣扎.mp3" },
@@ -74,7 +72,33 @@
         { title: "田園 - 先說愛的人為什麼先離開", url: "田園 - 先說愛的人為什麼先離開.mp3" },
         { title: "利比 - 跳樓機", url: "利比 - 跳樓機.mp3" },
         { title: "浩然 - 年少的你啊", url: "浩然 - 年少的你啊.mp3" },
-        { title: "無", url: "無.mp3" }
+        { title: "無", url: "無.mp3" },
+        // 新增歌曲
+        { title: "薛之謙 - 賤背的青春", url: "薛之謙-建背的青春.mp3" },
+        { title: "買辣椒也用券 - 起風了", url: "買辣椒也用券-起風了.mp3" },
+        { title: "DJ唐小力 - 千年等一回", url: "DJ唐小力-千年等一回.mp3" },
+        { title: "謝丹 - 賊拉拉拉的愛你", url: "謝丹-賊拉拉拉的愛你.mp3" },
+        { title: "花僮 - 笑納", url: "花僮 - 笑納.mp3" },
+        { title: "陳忻玥 - 煙幕", url: "陳忻玥 - 煙幕.mp3" },
+        { title: "王冕 - 勉為其難", url: "王冕 - 勉為其難.mp3" },
+        { title: "鄧寓君 - 辭九門回憶", url: "鄧寓君-辭九門回憶.mp3" },
+        { title: "于春洋DJ版 - 不謂俠", url: "于春洋DJ版-不調侠.mp3" },
+        { title: "珂拉琪 - 萬千花蕊慈母悲哀", url: "萬千花蕊慈母悲哀-珂拉琪.mp3" },
+        { title: "宋孟君DJ版 - 失眠的夜", url: "宋孟君DJ版-失眠的夜.mp3" },
+        { title: "到老都愛你", url: "到老都爱你.mp3" },
+        { title: "徐懷鈺 - 分飛", url: "徐懷鈺-分飛.mp3" },
+        { title: "韓小欠 - 你看時間等過誰", url: "韓小欠-你看時間等過誰.mp3" },
+        { title: "聞人聽書 - 虞兮嘆", url: "聞人聽書 - 虞兮嘆.mp3" },
+        { title: "艾辰 - 錯位時空", url: "艾辰-錯位時空.mp3" },
+        { title: "李玉剛 - 赤伶", url: "李玉剛-赤伶.mp3" },
+        { title: "利比 - 跳棲機", url: "利比 - 跳棲機.mp3" },
+        { title: "阿梨粤 - 秒針", url: "阿梨粤 - 秒針.mp3" },
+        { title: "王忻辰 / 蘇星婕 - 清空", url: "王忻辰 蘇星婕-清空.mp3" },
+        { title: "Rown - 我對自己開了一槍", url: "Rown-我對自己開了一槍.mp3" },
+        { title: "是七叔呢 - 踏山河", url: "是七叔呢-踏山河.mp3" },
+        { title: "王忻辰 - 落差", url: "王忻辰 - 落差.mp3" },
+        { title: "默涵DJ - 作酒", url: "默涵DJ - 作酒.mp3" },
+        { title: "林子祥 - 敢愛敢做", url: "林子祥-敢愛敢做.mp3" }
     ];
 
     let currentTrack = 0;
@@ -101,6 +125,7 @@
         title.innerText = songs[index].title;
         document.querySelectorAll('li').forEach((el, i) => {
             el.className = i === index ? 'active-song' : '';
+            if(i === index) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
         playBtn.innerText = "暫停";
         audio.play();
